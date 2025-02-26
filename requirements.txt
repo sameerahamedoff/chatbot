@@ -1,0 +1,9 @@
+flask==2.3.3
+flask-cors==4.0.0
+werkzeug==2.3.7
+groq==0.4.2
+httpx==0.24.1
+python-dotenv
+pinecone-client
+sentence-transformers
+numpy>=1.26.0,<2.0.0 
