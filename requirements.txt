@@ -6,4 +6,5 @@ httpx==0.24.1
 python-dotenv
 pinecone-client
 sentence-transformers
-numpy>=1.26.0,<2.0.0 
+numpy>=1.26.0,<2.0.0
+gunicorn 
