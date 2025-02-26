@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import groq
-from pinecone import Pinecone, ServerlessSpec
+import pinecone
 from sentence_transformers import SentenceTransformer
 import json
 import smtplib
@@ -70,32 +70,22 @@ groq_client = groq.Groq(api_key=GROQ_API_KEY)
 if not PINECONE_API_KEY:
     raise ValueError("Pinecone API key not set")
 
-pc = Pinecone(
-    api_key=PINECONE_API_KEY,
-    environment=PINECONE_ENVIRONMENT
-)
-
-# Initialize sentence transformer model for embeddings
-model = SentenceTransformer('all-MiniLM-L6-v2')
+pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT)
 
 # Create or connect to an index
 index_name = "components-db"
-if index_name not in pc.list_indexes().names():
+if index_name not in pinecone.list_indexes():
     print(f"Creating new index: {index_name}")
-    pc.create_index(
+    pinecone.create_index(
         name=index_name,
         dimension=384,  # This is correct, matches your existing index
-        metric='cosine',
-        spec=ServerlessSpec(
-            cloud='aws',
-            region='us-east-1'
-        )
+        metric='cosine'
     )
     print(f"Index {index_name} created successfully")
 else:
     print(f"Using existing index: {index_name}")
 
-index = pc.Index(index_name)
+index = pinecone.Index(index_name)
 
 SYSTEM_PROMPT = """You are an AI assistant for Sensiq, a company specializing in innovative solutions. 
 Your role is to:
@@ -789,5 +779,6 @@ def submit_quotation():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Default to 5000 if PORT is not set
+    # Use the PORT environment variable or default to 5000
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
