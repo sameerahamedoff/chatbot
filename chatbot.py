@@ -36,6 +36,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 
+# Add this constant at the top with other constants
+WHATSAPP_NUMBER = "+919865436028"  # Your WhatsApp business number
+
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app, resources={
@@ -789,6 +792,25 @@ def submit_quotation():
 
     except Exception as e:
         print(f"Error in submit_quotation: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/get-whatsapp-link', methods=['POST'])
+def get_whatsapp_link():
+    try:
+        data = request.json
+        user_name = data.get('name', '')
+        user_mobile = data.get('mobile', '')
+        
+        # Create WhatsApp link with pre-filled message
+        message = f"Hi, I'm {user_name} and I'd like to speak with an agent."
+        whatsapp_link = f"https://wa.me/{WHATSAPP_NUMBER}?text={message}"
+        
+        return jsonify({
+            "status": "success",
+            "whatsapp_link": whatsapp_link
+        })
+    except Exception as e:
+        print(f"Error generating WhatsApp link: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/favicon.ico')
