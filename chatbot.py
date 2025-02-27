@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -40,7 +40,12 @@ PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 app = Flask(__name__)
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:5173", "https://sensiq.ae", "https://www.sensiq.ae"],
+        "origins": [
+            "http://localhost:5173",
+            "https://sensiq.ae",
+            "https://www.sensiq.ae",
+            "https://your-frontend-domain.com"  # Add your frontend domain
+        ],
         "methods": ["GET", "POST"],
         "allow_headers": ["Content-Type"]
     }
@@ -785,6 +790,11 @@ def submit_quotation():
     except Exception as e:
         print(f"Error in submit_quotation: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                             'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)  # Use the PORT variable here
