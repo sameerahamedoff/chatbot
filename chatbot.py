@@ -14,7 +14,7 @@ import os.path
 
 # Load environment variables
 load_dotenv()
-
+PORT = int(os.getenv("PORT", 5000))  # Ensure PORT is an integer
 # Define all constants first
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BROCHURE_PATH = os.path.join(BASE_DIR, 'brochures', 'SN10 Brochure.pdf')
@@ -787,5 +787,4 @@ def submit_quotation():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=PORT)  # Use the PORT variable here
